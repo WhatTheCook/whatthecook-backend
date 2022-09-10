@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Ingredient {
+  id                BigInt              @id @default(autoincrement())
+  name              String?
+  unit              String?
+  Recipe_ingredient Recipe_ingredient[]
+  Pantry            Pantry[]
+}
+
+model Category {
+  id     BigInt   @id @default(autoincrement())
+  name   String?
+  Menu   Menu[]
+  Recipe Recipe[]
+}
+
+model Menu {
+  id         BigInt    @id @default(autoincrement())
+  name       String?
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId BigInt
+  Comment    Comment[]
+}
+
+model User {
+  id          BigInt       @id @default(autoincrement())
+  email       String?      @unique
+  username    String?
+  password    String?
+  Pantry      Pantry?
+  Recipe_fav  Recipe_fav?
+  Comment_fav Comment_fav?
+  Comment     Comment[]
+}
+
+model Recipe_ingredient {
+  id           BigInt     @id @default(autoincrement())
+  amount       Int
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  recipeId     BigInt
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId BigInt
+}
+
+model Recipe {
+  id                BigInt              @id @default(autoincrement())
+  name              String?
+  method            String?
+  cooking_time      String?
+  category          Category            @relation(fields: [categoryId], references: [id])
+  categoryId        BigInt
+  Recipe_ingredient Recipe_ingredient[]
+  Recipe_fav        Recipe_fav[]
+}
+
+model Method {
+  id          BigInt        @id @default(autoincrement())
+  description String?
+  step        BigInt
+  recipe      Recipe        @relation(fields: [recipeId], references: [id])
+  recipeId    BigInt
+}
+
+model Pantry {
+  id           BigInt       @id @default(autoincrement())
+  amount       Int
+  user         User         @relation(fields: [userId], references: [id])
+  userId       BigInt       @unique
+  ingredient   Ingredient   @relation(fields: [ingredientId], references: [id])
+  ingredientId BigInt
+}
+
+model Recipe_fav {
+  id       BigInt           @id @default(autoincrement())
+  user     User             @relation(fields: [userId], references: [id])
+  userId   BigInt           @unique
+  recipe   Recipe           @relation(fields: [recipeId], references: [id])
+  recipeId BigInt
+}
+
+model Comment_fav {
+  id        BigInt          @id @default(autoincrement())
+  user      User            @relation(fields: [userId], references: [id])
+  userId    BigInt          @unique
+  comment   Comment         @relation(fields: [commentId], references: [id])
+  commentId BigInt
+}
+
+model Comment {
+  id          BigInt        @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  content     String?
+  author      User          @relation(fields: [authorId], references: [id])
+  authorId    BigInt
+  menu        Menu          @relation(fields: [menuId], references: [id])
+  menuId      BigInt
+  Comment_fav Comment_fav[]
+}
