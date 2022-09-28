@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Ingredient {
-  id                BigInt              @id @default(autoincrement())
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name              String?
   unit              String?
   Recipe_ingredient Recipe_ingredient[]
@@ -19,22 +19,22 @@ model Ingredient {
 }
 
 model Category {
-  id     BigInt   @id @default(autoincrement())
+  id     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name   String?
   Menu   Menu[]
   Recipe Recipe[]
 }
 
 model Menu {
-  id         BigInt    @id @default(autoincrement())
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String?
   category   Category  @relation(fields: [categoryId], references: [id])
-  categoryId BigInt
+  categoryId String     @db.Uuid
   Comment    Comment[]
 }
 
 model User {
-  id          BigInt       @id @default(autoincrement())
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email       String?      @unique
   username    String?
   password    String?
@@ -45,65 +45,66 @@ model User {
 }
 
 model Recipe_ingredient {
-  id           BigInt     @id @default(autoincrement())
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   amount       Int
   recipe       Recipe     @relation(fields: [recipeId], references: [id])
-  recipeId     BigInt
+  recipeId     String      @db.Uuid
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
-  ingredientId BigInt
+  ingredientId String   @db.Uuid
 }
 
 model Recipe {
-  id                BigInt              @id @default(autoincrement())
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name              String?
   method            String?
   cooking_time      String?
   category          Category            @relation(fields: [categoryId], references: [id])
-  categoryId        BigInt
+  categoryId        String              @db.Uuid
   Recipe_ingredient Recipe_ingredient[]
   Recipe_fav        Recipe_fav[]
+  Method            Method[]
 }
 
 model Method {
-  id          BigInt        @id @default(autoincrement())
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   description String?
-  step        BigInt
-  recipe      Recipe        @relation(fields: [recipeId], references: [id])
-  recipeId    BigInt
+  step        String
+  recipe      Recipe  @relation(fields: [recipeId], references: [id])
+  recipeId    String    @db.Uuid
 }
 
 model Pantry {
-  id           BigInt       @id @default(autoincrement())
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   amount       Int
-  user         User         @relation(fields: [userId], references: [id])
-  userId       BigInt       @unique
-  ingredient   Ingredient   @relation(fields: [ingredientId], references: [id])
-  ingredientId BigInt
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String     @unique @db.Uuid
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+  ingredientId String   @db.Uuid
 }
 
 model Recipe_fav {
-  id       BigInt           @id @default(autoincrement())
-  user     User             @relation(fields: [userId], references: [id])
-  userId   BigInt           @unique
-  recipe   Recipe           @relation(fields: [recipeId], references: [id])
-  recipeId BigInt
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @unique @db.Uuid
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  recipeId String @db.Uuid
 }
 
 model Comment_fav {
-  id        BigInt          @id @default(autoincrement())
-  user      User            @relation(fields: [userId], references: [id])
-  userId    BigInt          @unique
-  comment   Comment         @relation(fields: [commentId], references: [id])
-  commentId BigInt
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String  @unique @db.Uuid
+  comment   Comment @relation(fields: [commentId], references: [id])
+  commentId String  @db.Uuid
 }
 
 model Comment {
-  id          BigInt        @id @default(autoincrement())
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt   DateTime      @default(now())
   content     String?
   author      User          @relation(fields: [authorId], references: [id])
-  authorId    BigInt
+  authorId    String        @db.Uuid
   menu        Menu          @relation(fields: [menuId], references: [id])
-  menuId      BigInt
+  menuId      String        @db.Uuid
   Comment_fav Comment_fav[]
 }
