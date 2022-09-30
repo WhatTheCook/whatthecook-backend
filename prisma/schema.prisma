@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,8 +11,8 @@ model Ingredient {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name              String?
   unit              String?
-  Recipe_ingredient Recipe_ingredient[]
   Pantry            Pantry[]
+  Recipe_ingredient Recipe_ingredient[]
 }
 
 model Category {
@@ -28,83 +25,84 @@ model Category {
 model Menu {
   id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String?
+  categoryId String    @db.Uuid
   category   Category  @relation(fields: [categoryId], references: [id])
-  categoryId String     @db.Uuid
   Comment    Comment[]
 }
 
 model User {
-  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email       String?      @unique
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String?       @unique
   username    String?
   password    String?
+  Comment     Comment[]
+  Comment_fav Comment_fav[]
   Pantry      Pantry?
   Recipe_fav  Recipe_fav?
-  Comment_fav Comment_fav?
-  Comment     Comment[]
 }
 
 model Recipe_ingredient {
   id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   amount       Int
-  recipe       Recipe     @relation(fields: [recipeId], references: [id])
-  recipeId     String      @db.Uuid
+  ingredientId String     @db.Uuid
+  recipeId     String     @db.Uuid
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
-  ingredientId String   @db.Uuid
+  recipe       Recipe     @relation(fields: [recipeId], references: [id])
 }
 
 model Recipe {
   id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name              String?
-  method            String?
   cooking_time      String?
-  category          Category            @relation(fields: [categoryId], references: [id])
   categoryId        String              @db.Uuid
-  Recipe_ingredient Recipe_ingredient[]
-  Recipe_fav        Recipe_fav[]
+  category          Category            @relation(fields: [categoryId], references: [id])
   Method            Method[]
+  Recipe_fav        Recipe_fav[]
+  Recipe_ingredient Recipe_ingredient[]
 }
 
 model Method {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   description String?
   step        String
+  recipeId    String  @db.Uuid
   recipe      Recipe  @relation(fields: [recipeId], references: [id])
-  recipeId    String    @db.Uuid
 }
 
 model Pantry {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   amount       Int
-  user         User       @relation(fields: [userId], references: [id])
   userId       String     @unique @db.Uuid
+  ingredientId String     @db.Uuid
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
-  ingredientId String   @db.Uuid
+  user         User       @relation(fields: [userId], references: [id])
 }
 
 model Recipe_fav {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user     User   @relation(fields: [userId], references: [id])
   userId   String @unique @db.Uuid
-  recipe   Recipe @relation(fields: [recipeId], references: [id])
   recipeId String @db.Uuid
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+  user     User   @relation(fields: [userId], references: [id])
 }
 
 model Comment_fav {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String  @unique @db.Uuid
-  comment   Comment @relation(fields: [commentId], references: [id])
   commentId String  @db.Uuid
+  userId    String  @db.Uuid
+  comment   Comment @relation(fields: [commentId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Comment_fav_userId_key")
 }
 
 model Comment {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt   DateTime      @default(now())
   content     String?
-  author      User          @relation(fields: [authorId], references: [id])
   authorId    String        @db.Uuid
-  menu        Menu          @relation(fields: [menuId], references: [id])
   menuId      String        @db.Uuid
+  author      User          @relation(fields: [authorId], references: [id])
+  menu        Menu          @relation(fields: [menuId], references: [id])
   Comment_fav Comment_fav[]
 }

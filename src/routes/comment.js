@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user,comment,menu,comment_fav} = new PrismaClient()
+const {user,comment,menu,comment_fav,category} = new PrismaClient()
 const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
@@ -40,8 +40,8 @@ router.post('/create', authenticate ,async (req,res) => {
     res.json(newComment)
 })
 
-//comment fav
-router.post('/', authenticate ,async (req,res) => {
+//like
+router.post('/like', authenticate ,async (req,res) => {
     const {commentId} = req.body;
     const userId = req.user.user_id;
     const userExists = await user.findUnique({
@@ -72,17 +72,71 @@ router.post('/', authenticate ,async (req,res) => {
     });
     res.json(newCommentFav)
 })
-//show fav comment of that user
-router.get('/favorite', authenticate ,async (req,res) => {
-    const userId = req.user.user_id;
-    const userCommentFav = await comment_fav.findMany({
+//unlike
+router.delete('/delete', authenticate ,async (req,res) => {
+    const {commentId} = req.body;
+    const deleteFav = await comment_fav.delete({
+        where: {
+            id:commentId
+        },
+    });
+    res.json(deleteFav)
+})
+
+//select all cat
+router.get('/categories', authenticate ,async (req,res) => {
+    const categories = await category.findMany({
         select:{
-            commentId:true,
+            name: true
+        },
+    });
+    res.json(categories)
+})
+//select all menu in that cat
+router.get('/menus', authenticate ,async (req,res) => {
+    const {categoryId} = req.body;
+    const menus= await menu.findMany({
+        select:{
+            name: true
         },
         where:{
-            id: userId
+            categoryId:categoryId
         }
     });
-    res.json(userCommentFav)
+    res.json(menus)
 })
+// edit comment
+// router.get('/editComment', authenticate ,async (req,res) => {
+//     const {categoryId} = req.body;
+//     const menus= await menu.findMany({
+//         select:{
+//             name: true
+//         },
+//         where:{
+//             categoryId:categoryId
+//         }
+//     });
+//     res.json(menus)
+// })
+
+//all comment in that menu
+router.get('/:menuID', authenticate ,async (req,res) => {
+    const userId = req.user.user_id;
+    const menuID = req.params.menuID
+    const comments = await comment.findMany({
+        where: {
+            menuId: menuID,
+        },
+        include: {
+            _count: {
+                select: { Comment_fav: true },
+            },
+            author: {
+                select: {username: true}
+            }
+        }
+    })
+    res.json(comments)
+})
+
 module.exports = router

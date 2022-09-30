@@ -21,6 +21,7 @@ router.get('/', authenticate ,async (req,res) => {
     });
     res.json(users)
 })
+
 //login
 router.post('/login', login)
 
@@ -52,5 +53,6 @@ router.post('/register',async (req,res) =>{
     const token = await generateToken({user_id:userId})
     res.json({token})
 })
+
 
 module.exports = router
