@@ -9,6 +9,8 @@ app.use(express.json())
 app.use('/api/user', require("./routes/user"))
 app.use('/api/comment', require("./routes/comment"))
 // app.use('/api/profile', require("./routes/profile"))
+// app.use('/api/pantry', require("./routes/pantry"))
+
 
 
 app.listen(5000,() => {

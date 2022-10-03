@@ -73,7 +73,7 @@ router.post('/like', authenticate ,async (req,res) => {
     res.json(newCommentFav)
 })
 //unlike
-router.delete('/delete', authenticate ,async (req,res) => {
+router.delete('/unlike', authenticate ,async (req,res) => {
     const {commentId} = req.body;
     const deleteFav = await comment_fav.delete({
         where: {
@@ -96,28 +96,108 @@ router.get('/categories', authenticate ,async (req,res) => {
 router.get('/menus', authenticate ,async (req,res) => {
     const {categoryId} = req.body;
     const menus= await menu.findMany({
-        select:{
-            name: true
-        },
+        // select:{
+        //     name: true
+        // },
         where:{
             categoryId:categoryId
+        },
+        include: {
+            _count: {
+                select: { Comment: true },
+            },
+            category: {
+                select: {name: true}
+            }
         }
     });
     res.json(menus)
 })
 // edit comment
-// router.get('/editComment', authenticate ,async (req,res) => {
-//     const {categoryId} = req.body;
-//     const menus= await menu.findMany({
-//         select:{
-//             name: true
-//         },
-//         where:{
-//             categoryId:categoryId
-//         }
-//     });
-//     res.json(menus)
-// })
+router.put('/editComment', authenticate ,async (req,res) => {
+    const {commentId,content} = req.body;
+    const userId = req.user.user_id;
+    const commentExists = await comment.findFirst({
+        where: {
+            id: commentId,
+            authorId:userId
+        }
+    });
+    if (!commentExists){
+        return res.status(400).json({
+            msg: "comment not found"
+        })
+    }
+    const updateComment = await comment.update({
+        where: {
+            id:commentId,
+            authorId:userId
+        },
+        data: {
+            content:content,
+            createdAt: new Date()
+        },
+    })
+
+    res.json(updateComment)
+})
+
+// delete comment
+router.delete('/deleteComment', authenticate ,async (req,res) => {
+    const {commentId} = req.body;
+    const userId = req.user.user_id;
+    const commentExists = await comment.findFirst({
+        where: {
+            id: commentId,
+            authorId:userId
+        }
+    });
+    if (!commentExists){
+        return res.status(400).json({
+            msg: "comment not found"
+        })
+    }
+    const deleteComment= await comment.delete({
+        where: {
+            id:commentId
+        },
+    });
+    res.json(deleteComment)
+})
+
+// search category
+router.get('/searchCat', authenticate ,async (req,res) => {
+    const {name} = req.body;
+    const searchCategory = await category.findMany({
+        where:{
+            name:{
+                contains: name
+            }
+        }
+    });
+    res.json(searchCategory)
+})
+
+// search menu
+router.get('/searchMenu', authenticate ,async (req,res) => {
+    const {name} = req.body;
+    const searchMenu = await menu.findMany({
+        where:{
+            name:{
+                contains: name
+            }
+        },
+        include: {
+            _count: {
+                select: { Comment: true },
+            },
+            category: {
+                select: {name: true}
+            }
+        }
+    });
+    res.json(searchMenu)
+})
 
 //all comment in that menu
 router.get('/:menuID', authenticate ,async (req,res) => {

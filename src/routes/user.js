@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
 const {login} = require("../controller/user");
+const {register} = require("../controller/user");
 
 //get user
 router.get('/', authenticate ,async (req,res) => {
@@ -24,35 +25,7 @@ router.get('/', authenticate ,async (req,res) => {
 
 //login
 router.post('/login', login)
-
 // register
-router.post('/register',async (req,res) =>{
-    const {username,email,password} = req.body;
-    const userExists = await user.findUnique({
-        where:{
-            email
-        },
-        select:{
-            email: true
-        }
-    });
-    if (userExists){
-        return res.status(400).json({
-            msg: "user already exists"
-        })
-    }
-    const hashedPassword = await hashPassword(password);
-    const newUser = await user.create({
-        data:{
-            username,
-            email,
-            password: hashedPassword
-        }
-    });
-    const userId = newUser.id
-    const token = await generateToken({user_id:userId})
-    res.json({token})
-})
-
+router.post('/register',register)
 
 module.exports = router
