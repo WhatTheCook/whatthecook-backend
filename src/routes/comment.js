@@ -120,7 +120,7 @@ router.put('/editComment', authenticate ,async (req,res) => {
     const commentExists = await comment.findFirst({
         where: {
             id: commentId,
-            authorId:userId
+            authorId:userId // this user comment
         }
     });
     if (!commentExists){
@@ -131,14 +131,12 @@ router.put('/editComment', authenticate ,async (req,res) => {
     const updateComment = await comment.update({
         where: {
             id:commentId,
-            authorId:userId
         },
         data: {
             content:content,
             createdAt: new Date()
         },
-    })
-
+    });
     res.json(updateComment)
 })
 
