@@ -38,7 +38,7 @@ model User {
   Comment     Comment[]
   Comment_fav Comment_fav[]
   Pantry      Pantry?
-  Recipe_fav  Recipe_fav?
+  Recipe_fav  Recipe_fav[]
 }
 
 model Recipe_ingredient {
@@ -80,10 +80,12 @@ model Pantry {
 
 model Recipe_fav {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId   String @unique @db.Uuid
+  userId   String @db.Uuid
   recipeId String @db.Uuid
   recipe   Recipe @relation(fields: [recipeId], references: [id])
   user     User   @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Recipe_fav_userId_key")
 }
 
 model Comment_fav {

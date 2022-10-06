@@ -6,3 +6,14 @@ const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
 const {login} = require("../controller/user");
 
+
+
+
+
+
+
+
+
+
+
+module.exports = router;

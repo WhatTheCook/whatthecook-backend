@@ -96,9 +96,6 @@ router.get("/categories", authenticate, async (req, res) => {
 router.get('/menus', authenticate ,async (req,res) => {
     const {categoryId} = req.body;
     const menus= await menu.findMany({
-        // select:{
-        //     name: true
-        // },
         where:{
             categoryId:categoryId
         },

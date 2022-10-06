@@ -166,9 +166,9 @@
 * Success: 200
 ```
 {
-    "id": "d4c22242-2dde-4ab3-842f-7abf2366945a",
-    "userId": "5e3f32fb-4359-4f14-a532-06e4fe7ba97d",
-    "commentId": "72a78008-7b78-4a90-8643-c8aacecda281"
+    "id",
+    "userId",
+    "commentId"
 }
 ```
 * Error: 400
@@ -212,7 +212,7 @@
     {
         "id"
         "name": String
-        "categoryId": "b687ca10-7ba3-4052-bc90-74a13b733d86",
+        "categoryId",
         "category": {
             "name": String
         },
@@ -333,8 +333,80 @@
 ]
 ```
 * Error: 400
+---
 
+## Edit user info
 
+* URL:/api/profile/editUserInfo
+* Method: PUT
+* Headers: Token
+* Body: none
+```
+{
+    "username": String
+    "email": String
+}
+ ```
+* Params: none
+* Success: 200
+```
+{
+    "id": 
+    "email": String
+    "username": String
+    "password": String
+}
+```
+* Error: 400
+
+---
+
+## Like recipe
+
+* URL:/api/home/likeRecipe
+* Method: POST
+* Headers: Token
+* Body:
+```
+{
+    "recipeId"
+}
+```
+* Params: none
+* Success: 200
+```
+{
+    "id",
+    "userId",
+    "recipeId"
+}
+```
+* Error: 400
+
+---
+## Unlike recipe
+
+* URL:/api/home/unlikeRecipe
+* Method: DELETE
+* Headers: Token
+* Body:
+```
+ {
+     "recipeId"
+ }
+ ```
+* Params: none
+* Success: 200
+```
+{
+    "id",
+    "userId",
+    "recipeId"
+}
+```
+* Error: 400
+
+--- 
 
 
 
