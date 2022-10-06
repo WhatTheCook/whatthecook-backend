@@ -408,6 +408,96 @@
 
 --- 
 
+## Get all recipes favorite by userid
+
+* URL:/api/profile/recipeFav
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: none
+* Success: 200
+```
+[
+    {
+        "id",
+        "userId",
+        "recipeId",
+        "recipe": {
+            "name": String,
+            "cooking_time": int,
+            "category": {
+                "name": String,
+            },
+            "_count": {
+                "Recipe_fav": int
+            }
+        }
+    },
+ ]
+```
+* Error: 400
+---
+## Get all comments favorite by userid
+
+* URL:/api/profile/commentFav
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: none
+* Success: 200
+```
+[
+    {
+        "id",
+        "commentId",
+        "userId",
+        "comment": {
+            "content": String,
+            "createdAt": timestamp
+            "author": {
+                "username": String
+            },
+            "menu": {
+                "name": String
+            },
+            "_count": {
+                "Comment_fav": int
+            }
+        }
+    }
+ ]
+```
+* Error: 400
+---
+
+## My article
+* URL:/api/profile/myArticle
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: none
+* Success: 200
+```
+[
+    {
+        "id",
+        "createdAt": timestamp,
+        "content": String,
+        "authorId",
+        "menuId",
+        "author": {
+            "username": String
+        },
+        "menu": {
+            "name": String
+        },
+        "_count": {
+            "Comment_fav": int
+        }
+    },
+```
+
+
 
 
 
