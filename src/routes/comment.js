@@ -94,7 +94,7 @@ router.get("/categories", authenticate, async (req, res) => {
 });
 //select all menu in that cat
 router.get('/menus', authenticate ,async (req,res) => {
-    const {categoryId} = req.body;
+    const {categoryId} = req.query;
     const menus= await menu.findMany({
         where:{
             categoryId:categoryId
@@ -162,7 +162,7 @@ router.delete('/deleteComment', authenticate ,async (req,res) => {
 
 // search category
 router.get('/searchCat', authenticate ,async (req,res) => {
-    const {name} = req.body;
+    const {name} = req.query;
     const searchCategory = await category.findMany({
         where:{
             name:{
@@ -175,7 +175,7 @@ router.get('/searchCat', authenticate ,async (req,res) => {
 
 // search menu
 router.get('/searchMenu', authenticate ,async (req,res) => {
-    const {name} = req.body;
+    const {name} = req.query;
     const searchMenu = await menu.findMany({
         where:{
             name:{

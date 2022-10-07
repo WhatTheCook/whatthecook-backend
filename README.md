@@ -285,12 +285,12 @@
 * Method: GET
 * Headers: Token
 * Body: none
+* Params: 
 ```
- {
-     "name":String
- }
+    {
+        "name":String
+    }
  ```
-* Params: none
 * Success: 200
 ```
 [
@@ -310,12 +310,12 @@
 * Method: GET
 * Headers: Token
 * Body: none
+* Params:
 ```
  {
      "name":String
  }
  ```
- * Params: none
 * Success: 200
 ```
 [
