@@ -53,6 +53,13 @@ router.get('/recipeFav', authenticate ,async (req,res) => {
         },
         where:{
             userId:userId,
+        },
+        orderBy: {
+            recipe: {
+                Recipe_fav:{
+                    _count: 'desc'
+                }
+            }
         }
     });
     res.json(recipesFav)
@@ -81,6 +88,13 @@ router.get('/commentFav', authenticate ,async (req,res) => {
         },
         where:{
             userId:userId
+        },
+        orderBy: {
+            comment: {
+                Comment_fav:{
+                    _count: 'desc'
+                }
+            }
         }
     });
     res.json(commentFavByUser)
@@ -104,6 +118,11 @@ router.get('/myArticle', authenticate ,async (req,res) => {
                 select: { name: true}
             }
         },
+        orderBy: {
+            Comment_fav: {
+                _count: 'desc'
+            }
+        }
     });
     res.json(myArticle)
 })

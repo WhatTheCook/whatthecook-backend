@@ -28,6 +28,7 @@ model Menu {
   categoryId String    @db.Uuid
   category   Category  @relation(fields: [categoryId], references: [id])
   Comment    Comment[]
+  PictureURL String
 }
 
 model User {
@@ -59,6 +60,7 @@ model Recipe {
   Method            Method[]
   Recipe_fav        Recipe_fav[]
   Recipe_ingredient Recipe_ingredient[]
+  PictureURL String
 }
 
 model Method {

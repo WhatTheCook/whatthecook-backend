@@ -106,6 +106,11 @@ router.get('/menus', authenticate ,async (req,res) => {
             category: {
                 select: {name: true}
             }
+        },
+        orderBy: {
+            Comment: {
+                _count: 'desc'
+            }
         }
     });
     res.json(menus)
@@ -210,6 +215,11 @@ router.get("/:menuID", authenticate, async (req, res) => {
         select: { username: true },
       },
     },
+      orderBy: {
+          Comment_fav: {
+              _count: 'desc'
+          }
+      }
   });
   res.json(comments);
 });
