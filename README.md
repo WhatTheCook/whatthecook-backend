@@ -496,6 +496,43 @@
         }
     },
 ```
+* Error: 400
+
+---
+
+## Find Ingredients
+
+* URL: /api/pantry/findIngredients
+* Method: POST
+* Headers: Token
+* Body:
+```
+  {
+    "ingredients": [
+        {"name": String, "amount": int},
+         {"name": String, "amount": int},
+    ]
+  }
+```
+* Params: none
+* Success: 200
+```
+[
+    {
+        "name": String,
+        "amount": int,
+        "unit": Sting
+    },
+    {
+        "name": String,
+        "amount": int,
+        "unit": Sting
+    }
+]
+
+```
+* Error: 400
+
 
 
 

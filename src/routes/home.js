@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user,comment,menu,comment_fav,recipe,recipe_fav} = new PrismaClient()
+const {user,recipe_fav,method} = new PrismaClient()
 const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
@@ -37,5 +37,18 @@ router.delete('/unlikeRecipe', authenticate ,async (req,res) => {
         },
     });
     res.json(deleteRecipeFav)
+})
+
+//test get menu method
+
+router.get('/method', authenticate ,async (req,res) => {
+        const methods = await method.findMany({
+            include:{
+                recipe:{
+                    select:{name:true}
+                }
+            }
+    });
+    res.json(methods)
 })
 module.exports = router;
