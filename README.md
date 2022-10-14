@@ -532,6 +532,41 @@
 
 ```
 * Error: 400
+---
+
+## Recipe detail
+* URL: /api/home/recipeDetail
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: 
+```
+{
+    "recipeId"
+}
+```
+* Success: 200
+```
+[
+    {
+        "id",
+        "description": String,
+        "step": int,
+        "recipeId": id,
+        "recipe": {
+            "name": String
+            "cooking_time":  int,
+            "category": {
+                "name": String
+            }
+        }
+    },
+ ]
+
+```
+* Error: 400
+
+
 
 
 

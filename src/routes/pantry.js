@@ -24,11 +24,15 @@ router.post('/findIngredients', authenticate ,async (req,res) => {
     }
     res.json(foundIngredients)
 })
-
-
-
-
-
+//select all ingredients
+router.get("/listIngredients", authenticate, async (req, res) => {
+    const ingredients = await ingredient.findMany({
+        select: {
+            name: true,
+        },
+    });
+    res.json(ingredients.map(i => i.name));
+});
 
 
 

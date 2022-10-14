@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user,recipe_fav,method} = new PrismaClient()
+const {user,recipe_fav,method,recipe} = new PrismaClient()
 const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
+const {tuple} = require("prisma/prisma-client/generator-build");
 
 
 // like recipe
@@ -37,18 +38,51 @@ router.delete('/unlikeRecipe', authenticate ,async (req,res) => {
         },
     });
     res.json(deleteRecipeFav)
-})
+});
 
-//test get menu method
-
-router.get('/method', authenticate ,async (req,res) => {
+// get menu method
+router.get('/recipeDetail', authenticate ,async (req,res) => {
+    const {recipeId} = req.query;
         const methods = await method.findMany({
+            where:{
+                recipeId: recipeId
+            },
             include:{
                 recipe:{
-                    select:{name:true}
-                }
+                    select:{
+                        name:true,
+                        cooking_time: true,
+                        category:{
+                            select: {
+                                name:true
+                            }
+                        }
+                    }
+                },
+
+            },
+            orderBy: {
+                step: 'asc'
             }
     });
     res.json(methods)
+})
+
+router.post('/findRecipes', authenticate ,async (req,res) => {
+    const {ingredients} = req.body;
+    // const foundIngredients = [];
+    for (const {name, amount} of ingredients){
+        const findIngredients = await ingredient.findFirst({
+            where:{
+                name:{
+                    equals: name
+                }
+            },
+        });
+        // if (findIngredients){
+        //     foundIngredients.push({name,amount,unit: findIngredients.unit})
+        // }
+    }
+    res.json(foundIngredients)
 })
 module.exports = router;
