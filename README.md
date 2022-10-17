@@ -557,6 +557,7 @@
         "category": {
             "name": String
         },
+        "PictureURL": "https://goodlifeupdate.com/app/uploads/2020/12/web-2.jpg",
         "Method": [
             {
                 "step": int,

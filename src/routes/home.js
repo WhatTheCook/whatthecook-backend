@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user,recipe_fav,method,recipe,recipe_ingredient,ingredient} = new PrismaClient()
+const {user,recipe_fav,method,recipe,recipe_ingredient,ingredient,pantry} = new PrismaClient()
 const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
@@ -80,16 +80,44 @@ router.get('/recipeDetail', authenticate ,async (req,res) => {
 })
 
 // suggest menu
+// หาก่อนว่า user มี ingre ไรบ้าง จำนวนเท่าไหร่ // line 7 in gob code
+// loop จาก ingre ที่ได้มา เพื่อดูว่า ingre ทำไรได้บ้าง // search -> เก้บเป็น set
 router.get('/suggestMenu', authenticate ,async (req,res) => {
     const userId = req.user.user_id;
-    const displayMenus = [];
-    const menuSet = new Set();
-    const {ingredients} = req.body;
-    for (const ingredient of ingredients) {
-        const menus = await recipe.findMany({
-
-        })
-    }
+    //     const userIngredient = await pantry.findMany({
+    //         where: {
+    //             userId: userId
+    //         },
+    //         include: {
+    //             ingredient: {
+    //                 select: {
+    //                     name: true,
+    //                     unit: true
+    //                 }
+    //             }
+    //         },
+    // })
+    // for (const {name, amount} of userIngredient) {
+    // const {name} = req.query
+    //     const findRecipe = await ingredient.findMany({
+    //         where:{
+    //             name:name
+    //         },
+    //         include:{
+    //             Recipe_ingredient:{
+    //                 select:{
+    //                     recipeId: true
+    //                 },
+    //             },
+    //             recipe:{
+    //                 select:{
+    //                     name:true
+    //                 }
+    //             }
+    //         }
+    //     });
+    //
+    //     res.json(findRecipe)
 
 })
 
