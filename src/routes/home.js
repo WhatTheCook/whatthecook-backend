@@ -79,6 +79,19 @@ router.get('/recipeDetail', authenticate ,async (req,res) => {
     res.json(methods)
 })
 
+// suggest menu
+router.get('/suggestMenu', authenticate ,async (req,res) => {
+    const userId = req.user.user_id;
+    const displayMenus = [];
+    const menuSet = new Set();
+    const {ingredients} = req.body;
+    for (const ingredient of ingredients) {
+        const menus = await recipe.findMany({
+
+        })
+    }
+
+})
 
 
 module.exports = router;

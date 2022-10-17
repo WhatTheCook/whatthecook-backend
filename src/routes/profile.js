@@ -47,7 +47,8 @@ router.get('/recipeFav', authenticate ,async (req,res) => {
                     cooking_time: true,
                     category:{
                         select: {name:true}
-                    }
+                    },
+                    PictureURL: true
                 }
             }
         },
@@ -82,7 +83,7 @@ router.get('/commentFav', authenticate ,async (req,res) => {
                     },
                     menu:{
                         select: {name:true}
-                    }
+                    },
                 }
             }
         },
