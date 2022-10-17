@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user,recipe_fav,method,recipe} = new PrismaClient()
+const {user,recipe_fav,method,recipe,recipe_ingredient,ingredient} = new PrismaClient()
 const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
@@ -43,46 +43,42 @@ router.delete('/unlikeRecipe', authenticate ,async (req,res) => {
 // get menu method
 router.get('/recipeDetail', authenticate ,async (req,res) => {
     const {recipeId} = req.query;
-        const methods = await method.findMany({
-            where:{
-                recipeId: recipeId
-            },
-            include:{
-                recipe:{
-                    select:{
-                        name:true,
-                        cooking_time: true,
-                        category:{
-                            select: {
-                                name:true
-                            }
-                        }
+    const methods = await recipe.findMany({
+        where:{
+            id: recipeId
+        },
+        include:{
+                category: {
+                    select: {
+                        name:true
                     }
                 },
-
+            Method: {
+                select: {
+                    step: true,
+                    description: true
+                },
+                orderBy:{
+                    step: 'asc'
+                }
             },
-            orderBy: {
-                step: 'asc'
+            Recipe_ingredient: {
+                select:{
+                    amount: true,
+                    ingredient:{
+                        select: {
+                            name:true,
+                            unit: true
+                        }
+                    }
+                }
             }
+        },
+
     });
     res.json(methods)
 })
 
-router.post('/findRecipes', authenticate ,async (req,res) => {
-    const {ingredients} = req.body;
-    // const foundIngredients = [];
-    for (const {name, amount} of ingredients){
-        const findIngredients = await ingredient.findFirst({
-            where:{
-                name:{
-                    equals: name
-                }
-            },
-        });
-        // if (findIngredients){
-        //     foundIngredients.push({name,amount,unit: findIngredients.unit})
-        // }
-    }
-    res.json(foundIngredients)
-})
+
+
 module.exports = router;

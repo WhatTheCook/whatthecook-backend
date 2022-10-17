@@ -550,21 +550,59 @@
 [
     {
         "id",
-        "description": String,
-        "step": int,
-        "recipeId": id,
-        "recipe": {
+        "name": String
+        "cooking_time": int,
+        "categoryId",
+        "PictureURL": URL,
+        "category": {
             "name": String
-            "cooking_time":  int,
-            "category": {
-                "name": String
-            }
-        }
-    },
+        },
+        "Method": [
+            {
+                "step": int,
+                "description": String
+            },
+        ],
+        "Recipe_ingredient": [
+            {
+                "amount": int,
+                "ingredient": {
+                    "name": String,
+                    "unit": String,
+                }
+            },
+        ]
+    }
+]
+
+```
+* Error: 400
+---
+
+## All ingredients name
+
+* URL: /api/pantry/listIngredients
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: none
+* Success: 200
+```
+[
+    "ตะไคร้",
+    "ส้มโอ",
+    "ใบแมงลัก",
+    "ต้นหอม",
+    "สายบัว",
+    "ปลาน้ำเงิน",
+    "นมหมู",
  ]
 
 ```
 * Error: 400
+---
+
+
 
 
 
