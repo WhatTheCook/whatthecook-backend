@@ -602,7 +602,30 @@
 ```
 * Error: 400
 ---
+## Suggest menu
 
+* URL: /api/home/suggestMenu
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: none
+* Success: 200
+```
+[
+    {
+        "id",
+        "name": String
+        "cooking_time": int,
+        "categoryId",
+        "PictureURL": URL
+        "_count": {
+            "Recipe_fav": int
+        }
+    },
+ ]
+
+```
+* Error: 400
 
 
 
