@@ -116,6 +116,12 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
                         Recipe_fav: true
                     }
                 },
+
+                category: {
+                    select: {
+                        name: true
+                    }
+                }
             },
             distinct: ['id'],
         });
@@ -126,5 +132,6 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
 
 })
 
+// suggest menu seperated by cat
 
 module.exports = router;
