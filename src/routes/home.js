@@ -79,9 +79,62 @@ router.get('/recipeDetail', authenticate, async (req, res) => {
     res.json(methods)
 })
 
-// suggest menu
+// suggest menu filter by cat
 
 router.get('/suggestMenu', authenticate, async (req, res) => {
+    const userId = req.user.user_id;
+    const userIngredient = await pantry.findMany({
+        where: {
+            userId: userId
+        },
+        include: {
+            ingredient: {
+                select: {
+                    name: true,
+                    unit: true,
+                }
+            }
+        },
+    })
+    console.log(userIngredient)
+    const recipes = []
+    for (const { ingredientId, amount } of userIngredient) {
+        const findRecipes = await recipe.findMany({
+            where: {
+                Recipe_ingredient: {
+                    some: {
+                        amount: {
+                            lte: amount
+                        },
+                        ingredientId: ingredientId
+                    }
+                },
+            },
+            include: {
+                _count: {
+                    select: {
+                        Recipe_fav: true
+                    }
+                },
+
+                category: {
+                    select: {
+                        name: true
+                    }
+                }
+            },
+            distinct: ['id'],
+        });
+        const newRecipes = findRecipes.filter(r => recipes.findIndex(r1 => r1.id == r.id) == -1)
+        recipes.push(...newRecipes)
+    }
+    res.json(recipes)
+
+})
+
+// suggest menu seperated by cat
+
+router.get('/suggestMenuByCat', authenticate, async (req, res) => {
     const userId = req.user.user_id;
     const userIngredient = await pantry.findMany({
         where: {
@@ -133,7 +186,5 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
     res.json(recipes)
 
 })
-
-// suggest menu seperated by cat
 
 module.exports = router;

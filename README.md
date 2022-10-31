@@ -627,6 +627,33 @@
 ```
 * Error: 400
 
+## Suggest menu seperated by cat
+
+* URL: /api/home/suggestMenuByCat
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: 
+```
+    categoryId
+```
+* Success: 200
+```
+[
+    {
+        "id",
+        "name": String
+        "cooking_time": int,
+        "categoryId",
+        "PictureURL": URL
+        "_count": {
+            "Recipe_fav": int
+        }
+    },
+ ]
+
+```
+* Error: 400
 
 
 
