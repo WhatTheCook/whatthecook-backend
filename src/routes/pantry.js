@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {ingredient} = new PrismaClient()
+const {ingredient,pantry} = new PrismaClient()
 const jwt = require('jsonwebtoken');
 const {hashPassword} = require("../util/encrypt");
 const {generateToken, authenticate} = require("../util/jwt");
@@ -15,7 +15,7 @@ router.post('/findIngredients', authenticate ,async (req,res) => {
             where:{
                 name:{
                     equals: name
-                }
+                },
             },
         });
         if (findIngredients){
@@ -30,12 +30,32 @@ router.post('/findIngredients', authenticate ,async (req,res) => {
 router.get("/listIngredients", authenticate, async (req, res) => {
     const ingredients = await ingredient.findMany({
         select: {
+            id:true,
             name: true,
         },
     });
-    res.json(ingredients.map(i => i.name));
+    res.json(ingredients);
 });
 
+// add pantry
+
+router.post('/addPantry', authenticate ,async (req,res) => {
+    const {ingredients} = req.body;
+    const foundIngredients = [];
+    for (const {name, amount} of ingredients){
+        const findIngredients = await pantry.findFirst({
+            where:{
+                name:{
+                    equals: name
+                }
+            },
+        });
+        if (findIngredients){
+            foundIngredients.post({name,amount,unit: findIngredients.unit})
+        }
+    }
+    res.json(userIngredient)
+})
 
 
 
