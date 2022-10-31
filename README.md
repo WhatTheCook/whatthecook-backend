@@ -228,7 +228,7 @@
 
 ## Edit comment
 
-* URL:/api/comment/menus
+* URL:/api/comment/editComment
 * Method: PUT
 * Headers: Token
 * Body: none

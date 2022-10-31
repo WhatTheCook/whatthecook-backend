@@ -99,6 +99,7 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
     console.log(userIngredient)
     const recipes = []
     for (const { ingredientId, amount } of userIngredient) {
+        const {categoryId} = req.query;
         const findRecipes = await recipe.findMany({
             where: {
                 Recipe_ingredient: {
@@ -108,7 +109,8 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
                         },
                         ingredientId: ingredientId
                     }
-                }
+                },
+                categoryId:categoryId
             },
             include: {
                 _count: {
