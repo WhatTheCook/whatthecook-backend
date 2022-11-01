@@ -19,7 +19,7 @@ router.post('/findIngredients', authenticate ,async (req,res) => {
             },
         });
         if (findIngredients){
-            foundIngredients.push({name,amount,unit: findIngredients.unit})
+            foundIngredients.push({id: findIngredients.id,name,amount,unit: findIngredients.unit})
         }
     }
     res.json(foundIngredients)
