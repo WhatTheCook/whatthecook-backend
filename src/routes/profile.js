@@ -116,7 +116,10 @@ router.get('/myArticle', authenticate ,async (req,res) => {
                 select: { username: true },
             },
             menu:{
-                select: { name: true}
+                select: { 
+                    name: true,
+                    PictureURL: true
+                }
             }
         },
         orderBy: {

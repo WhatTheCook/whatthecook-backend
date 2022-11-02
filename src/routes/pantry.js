@@ -1,25 +1,25 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {ingredient,pantry} = new PrismaClient()
+const { ingredient, pantry } = new PrismaClient()
 const jwt = require('jsonwebtoken');
-const {hashPassword} = require("../util/encrypt");
-const {generateToken, authenticate} = require("../util/jwt");
-const {login} = require("../controller/user");
+const { hashPassword } = require("../util/encrypt");
+const { generateToken, authenticate } = require("../util/jwt");
+const { login } = require("../controller/user");
 
 // search menu
-router.post('/findIngredients', authenticate ,async (req,res) => {
-    const {ingredients} = req.body;
+router.post('/findIngredients', authenticate, async (req, res) => {
+    const { ingredients } = req.body;
     const foundIngredients = [];
-    for (const {name, amount} of ingredients){
+    for (const { name, amount } of ingredients) {
         const findIngredients = await ingredient.findFirst({
-            where:{
-                name:{
+            where: {
+                name: {
                     equals: name
                 },
             },
         });
-        if (findIngredients){
-            foundIngredients.push({id: findIngredients.id,name,amount,unit: findIngredients.unit})
+        if (findIngredients) {
+            foundIngredients.push({ id: findIngredients.id, name, amount, unit: findIngredients.unit })
         }
     }
     res.json(foundIngredients)
@@ -30,7 +30,7 @@ router.post('/findIngredients', authenticate ,async (req,res) => {
 router.get("/listIngredients", authenticate, async (req, res) => {
     const ingredients = await ingredient.findMany({
         select: {
-            id:true,
+            id: true,
             name: true,
         },
     });
@@ -38,23 +38,38 @@ router.get("/listIngredients", authenticate, async (req, res) => {
 });
 
 // add pantry
-
-router.post('/addPantry', authenticate ,async (req,res) => {
-    const {ingredients} = req.body;
-    const foundIngredients = [];
-    for (const {name, amount} of ingredients){
-        const findIngredients = await pantry.findFirst({
-            where:{
-                name:{
-                    equals: name
-                }
-            },
+router.post('/addIngredient', authenticate, async (req, res) => {
+    const { ingredients } = req.body;
+    const userId = req.user.user_id;
+    for (const { ingredientId, amount } of ingredients) {
+        const duplicateIngredients = await pantry.findFirst({
+            where: {
+                ingredientId: ingredientId,
+                userId: userId
+            }
         });
-        if (findIngredients){
-            foundIngredients.post({name,amount,unit: findIngredients.unit})
+        let newamount = amount;  
+        if (duplicateIngredients) {
+            newamount = duplicateIngredients.amount + newamount;
+            await pantry.update({
+                where:{
+                    id: duplicateIngredients.id
+                },
+                data:{
+                    amount: newamount
+                }
+            })
+            continue
         }
+        const updateAmount = await pantry.create({
+            data:{
+                ingredientId,
+                userId,
+                amount : newamount
+            }
+        });
     }
-    res.json(userIngredient)
+    res.sendStatus(201);
 })
 
 

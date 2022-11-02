@@ -655,6 +655,24 @@
 ```
 * Error: 400
 
+---
+## Add ingredient in pantry
+
+* URL: /api/pantry/addIngredient
+* Method: POST
+* Headers: Token
+* Body: 
+```
+{
+    "ingredients": [
+        {"ingredientId","amount"},
+    ]
+}
+```
+* Params: none
+* Success: 201
+* Error: 400
+
 
 
 
