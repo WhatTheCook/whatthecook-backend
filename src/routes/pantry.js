@@ -48,30 +48,51 @@ router.post('/addIngredient', authenticate, async (req, res) => {
                 userId: userId
             }
         });
-        let newamount = amount;  
+        let newamount = amount;
         if (duplicateIngredients) {
             newamount = duplicateIngredients.amount + newamount;
             await pantry.update({
-                where:{
+                where: {
                     id: duplicateIngredients.id
                 },
-                data:{
+                data: {
                     amount: newamount
                 }
             })
             continue
         }
         const updateAmount = await pantry.create({
-            data:{
+            data: {
                 ingredientId,
                 userId,
-                amount : newamount
+                amount: newamount
             }
         });
     }
     res.sendStatus(201);
 })
 
+// get user ingredient to show in pantry
+
+router.get("/userIngredients", authenticate, async (req, res) => {
+    const userId = req.user.user_id;
+    const userIngredients = await pantry.findMany({
+        where: {
+            userId: userId,
+
+        },
+        include: {
+            ingredient: {
+                select: {
+                    name: true,
+                    unit: true,
+                },
+                
+            }
+        }
+    });
+    res.json(userIngredients);
+});
 
 
 

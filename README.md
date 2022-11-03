@@ -673,6 +673,31 @@
 * Success: 201
 * Error: 400
 
+---
+## Get ingredient in pantry
+
+* URL: /api/pantry/userIngredients
+* Method: GET
+* Headers: Token
+* Body: none
+* Params: none
+* Success: 200
+```
+[
+    {
+        "id",
+        "amount":Int,
+        "userId",
+        "ingredientId",
+        "ingredient": {
+            "name": String
+            "unit": String
+        }
+    },
+]
+```
+* Error: 400
+
 
 
 
