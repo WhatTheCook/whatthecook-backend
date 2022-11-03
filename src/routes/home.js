@@ -21,6 +21,17 @@ router.post("/likeRecipe", authenticate, async (req, res) => {
             msg: "user not found",
         });
     }
+    const duplicateFav = await recipe_fav.findFirst({
+        where: {
+          recipeId: recipeId,
+          userId: userId
+        }
+      });
+      if (duplicateFav) {
+        return res.status(400).json({
+          msg: "liked",
+        });
+      }
     const newRecipeFav = await recipe_fav.create({
         data: {
             recipeId,

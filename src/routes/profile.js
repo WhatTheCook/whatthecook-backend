@@ -82,7 +82,11 @@ router.get('/commentFav', authenticate ,async (req,res) => {
                         select: { username: true },
                     },
                     menu:{
-                        select: {name:true}
+                        select: {
+                            name:true,
+                            id : true,
+                            PictureURL: true
+                        }
                     },
                 }
             }

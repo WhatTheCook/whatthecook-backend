@@ -54,6 +54,8 @@ router.post("/like", authenticate, async (req, res) => {
       msg: "user not found",
     });
   }
+
+
   const commentExists = await comment.findUnique({
     where: {
       id: commentId,
@@ -64,23 +66,37 @@ router.post("/like", authenticate, async (req, res) => {
       msg: "menu not found",
     });
   }
+
+  const duplicateFav = await comment_fav.findFirst({
+    where: {
+      commentId: commentId,
+      userId: userId
+    }
+  });
+  if (duplicateFav) {
+    return res.status(400).json({
+      msg: "liked",
+    });
+  }
+
   const newCommentFav = await comment_fav.create({
     data: {
       commentId,
       userId,
     },
   });
+
   res.json(newCommentFav);
 });
 //unlike
-router.delete('/unlike', authenticate ,async (req,res) => {
-    const {commentId} = req.body;
-    const deleteFav = await comment_fav.delete({
-        where: {
-            id:commentId
-        },
-    });
-    res.json(deleteFav)
+router.delete('/unlike', authenticate, async (req, res) => {
+  const { commentId } = req.body;
+  const deleteFav = await comment_fav.delete({
+    where: {
+      id: commentId
+    },
+  });
+  res.json(deleteFav)
 })
 
 //select all cat
@@ -93,110 +109,110 @@ router.get("/categories", authenticate, async (req, res) => {
   res.json(categories);
 });
 //select all menu in that cat
-router.get('/menus', authenticate ,async (req,res) => {
-    const {categoryId} = req.query;
-    const menus= await menu.findMany({
-        where:{
-            categoryId:categoryId
-        },
-        include: {
-            _count: {
-                select: { Comment: true },
-            },
-            category: {
-                select: {name: true}
-            }
-        },
-        orderBy: {
-            Comment: {
-                _count: 'desc'
-            }
-        }
-    });
-    res.json(menus)
+router.get('/menus', authenticate, async (req, res) => {
+  const { categoryId } = req.query;
+  const menus = await menu.findMany({
+    where: {
+      categoryId: categoryId
+    },
+    include: {
+      _count: {
+        select: { Comment: true },
+      },
+      category: {
+        select: { name: true }
+      }
+    },
+    orderBy: {
+      Comment: {
+        _count: 'desc'
+      }
+    }
+  });
+  res.json(menus)
 })
 // edit comment
-router.put('/editComment', authenticate ,async (req,res) => {
-    const {commentId,content} = req.body;
-    const userId = req.user.user_id;
-    const commentExists = await comment.findFirst({
-        where: {
-            id: commentId,
-            authorId:userId // this user comment
-        }
-    });
-    if (!commentExists){
-        return res.status(400).json({
-            msg: "comment not found"
-        })
+router.put('/editComment', authenticate, async (req, res) => {
+  const { commentId, content } = req.body;
+  const userId = req.user.user_id;
+  const commentExists = await comment.findFirst({
+    where: {
+      id: commentId,
+      authorId: userId // this user comment
     }
-    const updateComment = await comment.update({
-        where: {
-            id:commentId,
-        },
-        data: {
-            content:content,
-            createdAt: new Date()
-        },
-    });
-    res.json(updateComment)
+  });
+  if (!commentExists) {
+    return res.status(400).json({
+      msg: "comment not found"
+    })
+  }
+  const updateComment = await comment.update({
+    where: {
+      id: commentId,
+    },
+    data: {
+      content: content,
+      createdAt: new Date()
+    },
+  });
+  res.json(updateComment)
 })
 
 // delete comment
-router.delete('/deleteComment', authenticate ,async (req,res) => {
-    const {commentId} = req.body;
-    const userId = req.user.user_id;
-    const commentExists = await comment.findFirst({
-        where: {
-            id: commentId,
-            authorId:userId
-        }
-    });
-    if (!commentExists){
-        return res.status(400).json({
-            msg: "comment not found"
-        })
+router.delete('/deleteComment', authenticate, async (req, res) => {
+  const { commentId } = req.body;
+  const userId = req.user.user_id;
+  const commentExists = await comment.findFirst({
+    where: {
+      id: commentId,
+      authorId: userId
     }
-    const deleteComment= await comment.delete({
-        where: {
-            id:commentId
-        },
-    });
-    res.json(deleteComment)
+  });
+  if (!commentExists) {
+    return res.status(400).json({
+      msg: "comment not found"
+    })
+  }
+  const deleteComment = await comment.delete({
+    where: {
+      id: commentId
+    },
+  });
+  res.json(deleteComment)
 })
 
 // search category
-router.get('/searchCat', authenticate ,async (req,res) => {
-    const {name} = req.query;
-    const searchCategory = await category.findMany({
-        where:{
-            name:{
-                contains: name
-            }
-        }
-    });
-    res.json(searchCategory)
+router.get('/searchCat', authenticate, async (req, res) => {
+  const { name } = req.query;
+  const searchCategory = await category.findMany({
+    where: {
+      name: {
+        contains: name
+      }
+    }
+  });
+  res.json(searchCategory)
 })
 
 // search menu
-router.get('/searchMenu', authenticate ,async (req,res) => {
-    const {name} = req.query;
-    const searchMenu = await menu.findMany({
-        where:{
-            name:{
-                contains: name
-            }
-        },
-        include: {
-            _count: {
-                select: { Comment: true },
-            },
-            category: {
-                select: {name: true}
-            }
-        }
-    });
-    res.json(searchMenu)
+router.get('/searchMenu', authenticate, async (req, res) => {
+  const { name } = req.query;
+  const searchMenu = await menu.findMany({
+    where: {
+      name: {
+        contains: name
+      }
+    },
+    include: {
+      _count: {
+        select: { Comment: true },
+      },
+      category: {
+        select: { name: true }
+      }
+    }
+  });
+  res.json(searchMenu)
 })
 
 //all comment in that menu
@@ -215,11 +231,11 @@ router.get("/:menuID", authenticate, async (req, res) => {
         select: { username: true },
       },
     },
-      orderBy: {
-          Comment_fav: {
-              _count: 'desc'
-          }
+    orderBy: {
+      Comment_fav: {
+        _count: 'desc'
       }
+    }
   });
   res.json(comments);
 });
