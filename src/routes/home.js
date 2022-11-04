@@ -97,7 +97,9 @@ router.get('/recipeDetail', authenticate, async (req, res) => {
             }
         },
     });
+    const count = await recipe_fav.count({ where: { userId: req.user.user_id, recipeId } })
     recipes[0].Method.sort((a,b) => parseInt(a.step) - parseInt(b.step))
+    recipes[0].is_like = count === 1
     res.json(recipes)
 })
 
