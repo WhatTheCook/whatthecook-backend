@@ -54,9 +54,11 @@ router.post("/likeRecipe", authenticate, async (req, res) => {
 // unlike recipe
 router.delete('/unlikeRecipe', authenticate, async (req, res) => {
     const { recipeId } = req.body;
+    const userId = req.user.user_id;
     const deleteRecipeFav = await recipe_fav.delete({
         where: {
-            id: recipeId
+            recipeId: recipeId,
+            userId: userId
         },
     });
     res.json(deleteRecipeFav)
