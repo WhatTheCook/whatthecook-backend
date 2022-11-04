@@ -32,6 +32,17 @@ router.post("/likeRecipe", authenticate, async (req, res) => {
           msg: "liked",
         });
       }
+    //   const checkLiked = await recipe_fav.findFirst({
+    //     where: {
+    //       recipeId: recipeId,
+    //       userId: userId
+    //     }
+    //   });
+    //   if (checkLiked) {
+    //     return res.status(400).json({
+    //       msg: "liked",
+    //     });
+    //   }
     const newRecipeFav = await recipe_fav.create({
         data: {
             recipeId,
@@ -54,7 +65,7 @@ router.delete('/unlikeRecipe', authenticate, async (req, res) => {
 // get menu method
 router.get('/recipeDetail', authenticate, async (req, res) => {
     const { recipeId } = req.query;
-    const methods = await recipe.findMany({
+    const recipes = await recipe.findMany({
         where: {
             id: recipeId
         },
@@ -85,9 +96,9 @@ router.get('/recipeDetail', authenticate, async (req, res) => {
                 }
             }
         },
-
     });
-    res.json(methods)
+    recipes[0].Method.sort((a,b) => parseInt(a.step) - parseInt(b.step))
+    res.json(recipes)
 })
 
 // suggest menu filter by cat
