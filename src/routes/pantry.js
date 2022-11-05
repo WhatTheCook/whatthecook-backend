@@ -94,6 +94,18 @@ router.get("/userIngredients", authenticate, async (req, res) => {
     res.json(userIngredients);
 });
 
+// delete ingredients in pantry
+router.delete('/deleteIngredient', authenticate, async (req, res) => {
+    const { ingredientId } = req.body;
+    const userId = req.user.user_id;
+    const deleteIngredient = await pantry.deleteMany({
+        where: {
+            ingredientId: ingredientId,
+            userId: userId
+        },
+    });
+    res.json(deleteIngredient)
+});
 
 
 module.exports = router;

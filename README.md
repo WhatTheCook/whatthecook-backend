@@ -698,7 +698,26 @@
 ```
 * Error: 400
 
+---
+## Delete ingredient in pantry
 
+* URL: /api/pantry/deleteIngredient
+* Method: DELETE
+* Headers: Token
+* Body: 
+```
+{
+    "ingredientId"
+}
+```
+* Params: none
+* Success: 200
+```
+{
+    "count": 1
+}
+```
+* Error: 400
 
 
 

@@ -32,17 +32,6 @@ router.post("/likeRecipe", authenticate, async (req, res) => {
           msg: "liked",
         });
       }
-    //   const checkLiked = await recipe_fav.findFirst({
-    //     where: {
-    //       recipeId: recipeId,
-    //       userId: userId
-    //     }
-    //   });
-    //   if (checkLiked) {
-    //     return res.status(400).json({
-    //       msg: "liked",
-    //     });
-    //   }
     const newRecipeFav = await recipe_fav.create({
         data: {
             recipeId,
