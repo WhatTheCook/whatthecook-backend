@@ -25,7 +25,7 @@ router.post('/findIngredients', authenticate, async (req, res) => {
     res.json(foundIngredients)
 })
 
-router.post('/searchIngredient', authenticate, async (req, res) => {
+router.post('/searchIngredient', async (req, res) => {
     const { ingredientName } = req.body;
     const findIngredients = await ingredient.findFirst({
         where: {
