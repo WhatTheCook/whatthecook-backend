@@ -84,7 +84,7 @@ router.post('/addIngredient', authenticate, async (req, res) => {
             }
         });
     }
-    res.sendStatus(201);
+    res.json({"message": "Created"});
 })
 
 // get user ingredient to show in pantry
