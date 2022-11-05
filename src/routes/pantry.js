@@ -63,26 +63,24 @@ router.post('/addIngredient', authenticate, async (req, res) => {
                 userId: userId
             }
         });
-        let newamount = amount;
         if (duplicateIngredients) {
-            newamount = duplicateIngredients.amount + newamount;
             await pantry.update({
                 where: {
                     id: duplicateIngredients.id
                 },
                 data: {
-                    amount: newamount
+                    amount: duplicateIngredients.amount + amount
                 }
             })
-            continue
+        } else {
+            const updateAmount = await pantry.create({
+                data: {
+                    ingredientId,
+                    userId,
+                    amount: amount
+                }
+            });
         }
-        const updateAmount = await pantry.create({
-            data: {
-                ingredientId,
-                userId,
-                amount: newamount
-            }
-        });
     }
     res.json({"message": "Created"});
 })
