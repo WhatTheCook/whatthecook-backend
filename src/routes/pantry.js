@@ -25,6 +25,21 @@ router.post('/findIngredients', authenticate, async (req, res) => {
     res.json(foundIngredients)
 })
 
+router.post('/searchIngredient', authenticate, async (req, res) => {
+    const { ingredientName } = req.body;
+    const findIngredients = await ingredient.findFirst({
+        where: {
+            name: {
+                equals: ingredientName
+            },
+        },
+    });
+    if(findIngredients == null) {
+        res.status(400).json({"message": "Ingredient not found"})
+    }
+    res.json(findIngredients)
+})
+
 
 //select all ingredients
 router.get("/listIngredients", authenticate, async (req, res) => {
