@@ -219,7 +219,7 @@ router.get('/searchMenu', authenticate, async (req, res) => {
 router.get("/:menuID", authenticate, async (req, res) => {
   const userId = req.user.user_id;
   const menuID = req.params.menuID;
-  const comments = await comment.findMany({
+  let comments = await comment.findMany({
     where: {
       menuId: menuID,
     },
@@ -230,6 +230,7 @@ router.get("/:menuID", authenticate, async (req, res) => {
       author: {
         select: { username: true },
       },
+      Comment_fav: { select: { id: true }, where: { userId }}
     },
     orderBy: {
       Comment_fav: {
@@ -237,6 +238,11 @@ router.get("/:menuID", authenticate, async (req, res) => {
       }
     }
   });
+  comments = comments.map((comment) => ({
+    ...comment,
+    isFav: comment.Comment_fav.length > 0,
+    Comment_fav: undefined
+  }))
   res.json(comments);
 });
 
