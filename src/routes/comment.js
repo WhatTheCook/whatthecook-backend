@@ -91,9 +91,11 @@ router.post("/like", authenticate, async (req, res) => {
 //unlike
 router.delete('/unlike', authenticate, async (req, res) => {
   const { commentId } = req.body;
-  const deleteFav = await comment_fav.delete({
+  const userId = req.user.user_id;
+  const deleteFav = await comment_fav.deleteMany({
     where: {
-      id: commentId
+      commentId:commentId,
+      userId: userId
     },
   });
   res.json(deleteFav)
