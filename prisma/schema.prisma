@@ -47,6 +47,7 @@ model Recipe_ingredient {
   amount       Int
   ingredientId String     @db.Uuid
   recipeId     String     @db.Uuid
+  optional     Boolean
   ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
   recipe       Recipe     @relation(fields: [recipeId], references: [id])
 }
@@ -60,7 +61,7 @@ model Recipe {
   Method            Method[]
   Recipe_fav        Recipe_fav[]
   Recipe_ingredient Recipe_ingredient[]
-  PictureURL String
+  PictureURL        String
 }
 
 model Method {

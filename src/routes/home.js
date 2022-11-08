@@ -96,55 +96,42 @@ router.get('/recipeDetail', authenticate, async (req, res) => {
 
 // suggest menu filter by cat
 
-router.get('/suggestMenu', authenticate, async (req, res) => {
-    const userId = req.user.user_id;
+router.get('/suggestMenu', async (req, res) => {
+    const userId = "5e3f32fb-4359-4f14-a532-06e4fe7ba97d";
     const userIngredient = await pantry.findMany({
+        select: {
+            ingredientId: true,
+            amount: true
+        },
+        where: {  userId: userId },
+    })
+    const ingredientCondition = userIngredient.map(ingredient => ({
+        ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
+    }))
+    const recipes = await recipe.findMany({
         where: {
-            userId: userId
+            Recipe_ingredient: {
+                every: {
+                    OR: [...ingredientCondition,  { optional: true }, ],
+                },
+            },
         },
         include: {
-            ingredient: {
+            _count: {
                 select: {
-                    name: true,
-                    unit: true,
+                    Recipe_fav: true
+                }
+            },
+
+            category: {
+                select: {
+                    name: true
                 }
             }
         },
-    })
-    console.log(userIngredient)
-    const recipes = []
-    for (const { ingredientId, amount } of userIngredient) {
-        const findRecipes = await recipe.findMany({
-            where: {
-                Recipe_ingredient: {
-                    some: {
-                        amount: {
-                            lte: amount
-                        },
-                        ingredientId: ingredientId
-                    }
-                },
-            },
-            include: {
-                _count: {
-                    select: {
-                        Recipe_fav: true
-                    }
-                },
-
-                category: {
-                    select: {
-                        name: true
-                    }
-                }
-            },
-            distinct: ['id'],
-        });
-        const newRecipes = findRecipes.filter(r => recipes.findIndex(r1 => r1.id == r.id) == -1)
-        recipes.push(...newRecipes)
-    }
+        distinct: ['id'],
+    });
     res.json(recipes)
-
 })
 
 // suggest menu seperated by cat
