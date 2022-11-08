@@ -1,13 +1,13 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user,recipe,menu,recipe_fav,comment_fav,comment} = new PrismaClient()
+const { user, recipe, menu, recipe_fav, comment_fav, comment, } = new PrismaClient()
 const jwt = require('jsonwebtoken');
-const {hashPassword} = require("../util/encrypt");
-const {generateToken, authenticate} = require("../util/jwt");
+const { hashPassword } = require("../util/encrypt");
+const { generateToken, authenticate } = require("../util/jwt");
 
 //get user
-router.put('/editUserInfo', authenticate ,async (req,res) => {
-    const {username,email} = req.body;
+router.put('/editUserInfo', authenticate, async (req, res) => {
+    const { username, email } = req.body;
     const userId = req.user.user_id;
     const userExists = await user.findUnique({
         where: {
@@ -21,11 +21,11 @@ router.put('/editUserInfo', authenticate ,async (req,res) => {
     }
     const updateProfile = await user.update({
         where: {
-            id:userId
+            id: userId
         },
         data: {
-            username:username,
-            email:email
+            username: username,
+            email: email
         },
     });
     res.json(updateProfile)
@@ -34,30 +34,30 @@ router.put('/editUserInfo', authenticate ,async (req,res) => {
 //get user fav
 
 //get recipe fav by userId
-router.get('/recipeFav', authenticate ,async (req,res) => {
+router.get('/recipeFav', authenticate, async (req, res) => {
     const userId = req.user.user_id;
     const recipesFav = await recipe_fav.findMany({
         include: {
             recipe: {
-                select:{
+                select: {
                     _count: {
                         select: { Recipe_fav: true },
                     },
-                    name:true,
+                    name: true,
                     cooking_time: true,
-                    category:{
-                        select: {name:true}
+                    category: {
+                        select: { name: true }
                     },
                     PictureURL: true
                 }
             }
         },
-        where:{
-            userId:userId,
+        where: {
+            userId: userId,
         },
         orderBy: {
             recipe: {
-                Recipe_fav:{
+                Recipe_fav: {
                     _count: 'desc'
                 }
             }
@@ -67,36 +67,36 @@ router.get('/recipeFav', authenticate ,async (req,res) => {
 })
 
 //get comment fav by userId
-router.get('/commentFav', authenticate ,async (req,res) => {
+router.get('/commentFav', authenticate, async (req, res) => {
     const userId = req.user.user_id;
     const commentFavByUser = await comment_fav.findMany({
         include: {
             comment: {
-                select:{
+                select: {
                     _count: {
                         select: { Comment_fav: true },
                     },
-                    content:true,
+                    content: true,
                     createdAt: true,
                     author: {
                         select: { username: true },
                     },
-                    menu:{
+                    menu: {
                         select: {
-                            name:true,
-                            id : true,
+                            name: true,
+                            id: true,
                             PictureURL: true
                         }
                     },
                 }
-            }
+            },
         },
-        where:{
-            userId:userId
+        where: {
+            userId: userId
         },
         orderBy: {
             comment: {
-                Comment_fav:{
+                Comment_fav: {
                     _count: 'desc'
                 }
             }
@@ -106,25 +106,26 @@ router.get('/commentFav', authenticate ,async (req,res) => {
 })
 
 // My article
-router.get('/myArticle', authenticate ,async (req,res) => {
+router.get('/myArticle', authenticate, async (req, res) => {
     const userId = req.user.user_id;
-    const myArticle = await comment.findMany({
-        where:{
-            authorId:userId
+    let myArticle = await comment.findMany({
+        where: {
+            authorId: userId
         },
         include: {
             _count: {
                 select: { Comment_fav: true },
             },
-            author: { // ไม่ได้ใช้โชว์เอามาลองcheck ตอนtestเฉยๆ
+            author: {
                 select: { username: true },
             },
-            menu:{
-                select: { 
+            menu: {
+                select: {
                     name: true,
                     PictureURL: true
                 }
-            }
+            },
+            Comment_fav: { select: { id: true }, where: { userId } }
         },
         orderBy: {
             Comment_fav: {
@@ -132,7 +133,12 @@ router.get('/myArticle', authenticate ,async (req,res) => {
             }
         }
     });
-    res.json(myArticle)
+    myArticle = myArticle.map((comment) => ({
+        ...comment,
+        isFav: comment.Comment_fav.length > 0,
+        Comment_fav: undefined
+    }))
+    res.json(myArticle);
 })
 
 module.exports = router;

@@ -94,7 +94,7 @@ router.delete('/unlike', authenticate, async (req, res) => {
   const userId = req.user.user_id;
   const deleteFav = await comment_fav.deleteMany({
     where: {
-      commentId:commentId,
+      commentId: commentId,
       userId: userId
     },
   });
@@ -232,7 +232,7 @@ router.get("/:menuID", authenticate, async (req, res) => {
       author: {
         select: { username: true },
       },
-      Comment_fav: { select: { id: true }, where: { userId }}
+      Comment_fav: { select: { id: true }, where: { userId } }
     },
     orderBy: {
       Comment_fav: {
