@@ -42,14 +42,20 @@ model User {
   Recipe_fav  Recipe_fav[]
 }
 
+enum IngredientType {
+  MAIN
+  OPTIONAL
+  SEASONING
+}
+
 model Recipe_ingredient {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   amount       Int
-  ingredientId String     @db.Uuid
-  recipeId     String     @db.Uuid
-  optional     Boolean
-  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
-  recipe       Recipe     @relation(fields: [recipeId], references: [id])
+  ingredientId String         @db.Uuid
+  recipeId     String         @db.Uuid
+  type         IngredientType
+  ingredient   Ingredient     @relation(fields: [ingredientId], references: [id])
+  recipe       Recipe         @relation(fields: [recipeId], references: [id])
 }
 
 model Recipe {
