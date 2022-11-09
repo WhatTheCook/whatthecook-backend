@@ -6,7 +6,6 @@ const { hashPassword } = require("../util/encrypt");
 const { generateToken, authenticate } = require("../util/jwt");
 const { tuple } = require("prisma/prisma-client/generator-build");
 
-
 // like recipe
 router.post("/likeRecipe", authenticate, async (req, res) => {
     const { recipeId } = req.body;
@@ -112,7 +111,7 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
         where: {
             Recipe_ingredient: {
                 every: {
-                    OR: [...ingredientCondition,  { optional: true }, ],
+                    OR: [...ingredientCondition,  { type: 'OPTIONAL' }, { type: 'SEASONING' }],
                 },
             },
         },
@@ -153,10 +152,10 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
         where: {
             Recipe_ingredient: {
                 every: {
-                    OR: [...ingredientCondition,  { optional: true }, ],
+                    OR: [...ingredientCondition,  { type: 'OPTIONAL' }, { type: 'SEASONING' }],
                 },
             },
-            categoryId:categoryId
+            categoryId: categoryId
         },
         include: {
             _count: {
