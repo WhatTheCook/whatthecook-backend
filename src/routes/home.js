@@ -4,7 +4,7 @@ const { user, recipe_fav, method, recipe, recipe_ingredient, ingredient, pantry 
 const jwt = require('jsonwebtoken');
 const { hashPassword } = require("../util/encrypt");
 const { generateToken, authenticate } = require("../util/jwt");
-const { tuple } = require("prisma/prisma-client/generator-build");
+const { tuple, re } = require("prisma/prisma-client/generator-build");
 
 // like recipe
 router.post("/likeRecipe", authenticate, async (req, res) => {
@@ -22,15 +22,15 @@ router.post("/likeRecipe", authenticate, async (req, res) => {
     }
     const duplicateFav = await recipe_fav.findFirst({
         where: {
-          recipeId: recipeId,
-          userId: userId
+            recipeId: recipeId,
+            userId: userId
         }
-      });
-      if (duplicateFav) {
+    });
+    if (duplicateFav) {
         return res.status(400).json({
-          msg: "liked",
+            msg: "liked",
         });
-      }
+    }
     const newRecipeFav = await recipe_fav.create({
         data: {
             recipeId,
@@ -88,7 +88,7 @@ router.get('/recipeDetail', authenticate, async (req, res) => {
         },
     });
     const count = await recipe_fav.count({ where: { userId: req.user.user_id, recipeId } })
-    recipes[0].Method.sort((a,b) => parseInt(a.step) - parseInt(b.step))
+    recipes[0].Method.sort((a, b) => parseInt(a.step) - parseInt(b.step))
     recipes[0].is_like = count === 1
     res.json(recipes)
 })
@@ -102,7 +102,7 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
             ingredientId: true,
             amount: true
         },
-        where: {  userId: userId },
+        where: { userId: userId },
     })
     const ingredientCondition = userIngredient.map(ingredient => ({
         ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
@@ -111,7 +111,7 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
         where: {
             Recipe_ingredient: {
                 every: {
-                    OR: [...ingredientCondition,  { type: 'OPTIONAL' }, { type: 'SEASONING' }],
+                    OR: [...ingredientCondition, { type: 'OPTIONAL' }, { type: 'SEASONING' }],
                 },
             },
         },
@@ -142,17 +142,17 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
             ingredientId: true,
             amount: true
         },
-        where: {  userId: userId },
+        where: { userId: userId },
     })
     const ingredientCondition = userIngredient.map(ingredient => ({
         ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
     }))
-    const {categoryId} = req.query;
+    const { categoryId } = req.query;
     const recipes = await recipe.findMany({
         where: {
             Recipe_ingredient: {
                 every: {
-                    OR: [...ingredientCondition,  { type: 'OPTIONAL' }, { type: 'SEASONING' }],
+                    OR: [...ingredientCondition, { type: 'OPTIONAL' }, { type: 'SEASONING' }],
                 },
             },
             categoryId: categoryId
@@ -174,5 +174,44 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
     });
     res.json(recipes)
 })
+
+// missing ingredient
+
+router.get('/missingIngredients', authenticate, async (req, res) => {
+    const userId = req.user.user_id;
+    const userIngredient = await pantry.findMany({
+        select: {
+            ingredientId: true,
+            amount: true
+        },
+        where: { userId: userId },
+    });
+    console.log(userIngredient)
+    const dict = {}
+    userIngredient.forEach(i => {
+        dict[i.ingredientId] = i.amount
+    });
+    console.log(dict)
+    const { recipeId } = req.query;
+    const matchIngredient = await recipe_ingredient.findMany({
+        where: {
+            recipeId,
+            OR: [{ type: 'MAIN' }, { type: 'OPTIONAL' }]
+        },
+        include: {
+            ingredient: { select: { name: true } }
+        },
+
+    });
+
+    const result = matchIngredient.map((i) => ({
+        ...i,
+        ingredient: i.ingredient.name,
+        miss: (!dict[i.ingredientId] || i.amount > dict[i.ingredientId]),
+    }))
+    console.log(matchIngredient)
+    res.json(result)
+});
+
 
 module.exports = router;
