@@ -47,6 +47,7 @@ enum IngredientType {
   MAIN
   OPTIONAL
   SEASONING
+  MEAT
 }
 
 model Recipe_ingredient {

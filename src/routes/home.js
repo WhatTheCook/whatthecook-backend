@@ -102,7 +102,10 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
             ingredientId: true,
             amount: true
         },
-        where: { userId: userId },
+        where: { 
+            userId: userId 
+        },
+        
     })
     const ingredientCondition = userIngredient.map(ingredient => ({
         ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
@@ -213,23 +216,25 @@ router.get('/missingIngredients', authenticate, async (req, res) => {
     const { recipeId } = req.query;
     const matchIngredient = await recipe_ingredient.findMany({
         where: {
-            recipeId,
-            OR: [{ type: 'MAIN' }, { type: 'OPTIONAL' }]
+            recipeId
         },
         include: {
-            ingredient: { select: { name: true } }
+            ingredient: { select: { name: true, unit: true } }
         },
 
     });
 
     const result = matchIngredient.map((i) => ({
         ...i,
-        ingredient: i.ingredient.name,
-        miss: (!dict[i.ingredientId] || i.amount > dict[i.ingredientId]),
+        ingredient: i.ingredient.name,unit: i.ingredient.unit, 
+        miss: i.type != 'SEASONING' && (!dict[i.ingredientId] || i.amount > dict[i.ingredientId]),
     }))
     console.log(matchIngredient)
     res.json(result)
 });
+
+// click cook
+
 
 
 module.exports = router;
