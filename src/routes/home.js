@@ -156,31 +156,40 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
     const ingredientCondition = userIngredient.map(ingredient => ({
         ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
     }))
-    const { categoryId } = req.query;
-    const recipes = await recipe.findMany({
+    const {categoryId} = req.query
+    let recipes = await recipe.findMany({
         where: {
             Recipe_ingredient: {
-                every: {
-                    OR: [...ingredientCondition, { type: 'OPTIONAL' }, { type: 'SEASONING' }],
-                },
+                some: {
+                    OR: [...ingredientCondition]
+                }
             },
-            categoryId: categoryId
+            categoryId:categoryId
         },
         include: {
             _count: {
                 select: {
-                    Recipe_fav: true
-                }
+                    Recipe_fav: true,
+                    Recipe_ingredient: {
+                        where: {
+                            type: 'MAIN',
+                            ingredientId: {
+                                notIn: userIngredient.map(ingredient => ingredient.ingredientId),
+                            }
+                        }
+                    }
+                },
             },
-
             category: {
                 select: {
                     name: true
                 }
-            }
+            },
         },
         distinct: ['id'],
     });
+    recipes.sort((a, b) => a._count.Recipe_ingredient - b._count.Recipe_ingredient)
+    recipes = recipes.map(recipe => ({...recipe, _count: { Recipe_fav: recipe._count.Recipe_fav, missing_count: recipe._count.Recipe_ingredient }}))
     res.json(recipes)
 })
 

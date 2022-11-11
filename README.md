@@ -615,11 +615,15 @@
     {
         "id",
         "name": String
-        "cooking_time": int,
+        "cooking_time":int
         "categoryId",
-        "PictureURL": URL
+        "PictureURL": URL,
+        "category": {
+            "name": String
+        },
         "_count": {
-            "Recipe_fav": int
+            "Recipe_fav": Int,
+            "missing_count": Int
         }
     },
  ]
@@ -643,11 +647,15 @@
     {
         "id",
         "name": String
-        "cooking_time": int,
+        "cooking_time":int
         "categoryId",
-        "PictureURL": URL
+        "PictureURL": URL,
+        "category": {
+            "name": String
+        },
         "_count": {
-            "Recipe_fav": int
+            "Recipe_fav": Int,
+            "missing_count": Int
         }
     },
  ]
@@ -719,6 +727,32 @@
 ```
 * Error: 400
 
+---
+## Missing ingredient
+
+* URL: /api/home/missingIngredient
+* Method: GET
+* Headers: Token
+* Params: 
+```
+{
+    "recipeId"
+}
+```
+* Body: none
+* Success: 200
+```
+ {
+        "id",
+        "amount": Int,
+        "ingredientId",
+        "recipeId",
+        "type": String,
+        "ingredient": String,
+        "miss": Boolean
+    },
+```
+* Error: 400
 
 
 
