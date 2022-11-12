@@ -102,10 +102,10 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
             ingredientId: true,
             amount: true
         },
-        where: { 
-            userId: userId 
+        where: {
+            userId: userId
         },
-        
+
     })
     const ingredientCondition = userIngredient.map(ingredient => ({
         ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
@@ -141,7 +141,7 @@ router.get('/suggestMenu', authenticate, async (req, res) => {
         distinct: ['id'],
     });
     recipes.sort((a, b) => a._count.Recipe_ingredient - b._count.Recipe_ingredient)
-    recipes = recipes.map(recipe => ({...recipe, _count: { Recipe_fav: recipe._count.Recipe_fav, missing_count: recipe._count.Recipe_ingredient }}))
+    recipes = recipes.map(recipe => ({ ...recipe, _count: { Recipe_fav: recipe._count.Recipe_fav, missing_count: recipe._count.Recipe_ingredient } }))
     res.json(recipes)
 })
 
@@ -159,7 +159,7 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
     const ingredientCondition = userIngredient.map(ingredient => ({
         ingredientId: ingredient.ingredientId, amount: { lte: ingredient.amount }
     }))
-    const {categoryId} = req.query
+    const { categoryId } = req.query
     let recipes = await recipe.findMany({
         where: {
             Recipe_ingredient: {
@@ -167,7 +167,7 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
                     OR: [...ingredientCondition]
                 }
             },
-            categoryId:categoryId
+            categoryId: categoryId
         },
         include: {
             _count: {
@@ -192,7 +192,7 @@ router.get('/suggestMenuByCat', authenticate, async (req, res) => {
         distinct: ['id'],
     });
     recipes.sort((a, b) => a._count.Recipe_ingredient - b._count.Recipe_ingredient)
-    recipes = recipes.map(recipe => ({...recipe, _count: { Recipe_fav: recipe._count.Recipe_fav, missing_count: recipe._count.Recipe_ingredient }}))
+    recipes = recipes.map(recipe => ({ ...recipe, _count: { Recipe_fav: recipe._count.Recipe_fav, missing_count: recipe._count.Recipe_ingredient } }))
     res.json(recipes)
 })
 
@@ -226,7 +226,7 @@ router.get('/missingIngredients', authenticate, async (req, res) => {
 
     const result = matchIngredient.map((i) => ({
         ...i,
-        ingredient: i.ingredient.name,unit: i.ingredient.unit, 
+        ingredient: i.ingredient.name, unit: i.ingredient.unit,
         miss: i.type != 'SEASONING' && (!dict[i.ingredientId] || i.amount > dict[i.ingredientId]),
     }))
     console.log(matchIngredient)
@@ -236,28 +236,44 @@ router.get('/missingIngredients', authenticate, async (req, res) => {
 // click to cook
 
 router.put('/clickForCook', authenticate, async (req, res) => {
-
+    const { recipeId } = req.query;
     const userId = req.user.user_id;
-    const userIngredient = await pantry.findMany({
+    const recipeIngredient = await recipe_ingredient.findMany({
         select: {
             ingredientId: true,
-            amount: true
+            amount: true,
+            ingredient: {
+                select: { name: true }
+            }
         },
-        where: { userId: userId },
+        where: {
+            recipeId: recipeId
+        },
     });
 
-    const {recipeId} = req.query;
-
-    const updateIngredient = await pantry.update({
-        where: {
-          
-        },
-        data: {
-          content: content,
-          createdAt: new Date()
-        },
-      });
-      res.json(updateIngredient)
+    for (const { ingredientId, amount } of recipeIngredient) {
+        const checkIngredient = await pantry.findFirst({
+            where: {
+                ingredientId: ingredientId,
+                userId: userId,
+                amount: { gte: amount }
+            }
+        });
+        if (checkIngredient) {
+            const newAmount = checkIngredient.amount - amount
+            const updateAmount = await pantry.updateMany({
+                where: {
+                    userId,
+                    ingredientId: ingredientId
+                },
+                data: {
+                    amount:newAmount
+                },
+            });
+            console.log(updateAmount)
+        }
+    }
+    res.sendStatus(200)
 })
 
 

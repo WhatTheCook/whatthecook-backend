@@ -1,26 +1,26 @@
 const router = require("express").Router();
 const { PrismaClient } = require('@prisma/client')
-const {user} = new PrismaClient()
+const { user } = new PrismaClient()
 const jwt = require('jsonwebtoken');
-const {hashPassword} = require("../util/encrypt");
-const {generateToken, authenticate} = require("../util/jwt");
-const {login} = require("../controller/user");
-const {register} = require("../controller/user");
-const  nanoid =  require("nanoid");
+const { hashPassword } = require("../util/encrypt");
+const { generateToken, authenticate } = require("../util/jwt");
+const { login } = require("../controller/user");
+const { register } = require("../controller/user");
+const nanoid = require("nanoid");
 const nodemailer = require('nodemailer');
-const NodeCache = require( "node-cache" );
+const NodeCache = require("node-cache");
 const Cache = new NodeCache();
 
 //get user
-router.get('/', authenticate ,async (req,res) => {
+router.get('/', authenticate, async (req, res) => {
     const user_id = req.user.user_id;
     console.log(user_id)
     const users = await user.findFirst({
-        select:{
-            username:true,
-            email:true,
+        select: {
+            username: true,
+            email: true,
         },
-        where:{
+        where: {
             id: user_id
         }
     });
@@ -30,22 +30,21 @@ router.get('/', authenticate ,async (req,res) => {
 //login
 router.post('/login', login)
 // register
-router.post('/register',register)
+router.post('/register', register)
 
 //reset password
-router.post('/resetpassword' ,async (req,res) => {
-    const {email} = req.body;
+router.post('/sendOTP', async (req, res) => {
+    const { email } = req.body;
     const Currentuser = await user.findFirst({
-        where:{
-            email:email
+        where: {
+            email: email
         }
     })
     if (Currentuser == null) {
-        res.sendStatus(404)
-        return
+        return res.sendStatus(404)
     }
-    const OTP = nanoid.customAlphabet("0123456789",6)()
-    Cache.set(OTP,Currentuser.id,300)
+    const OTP = nanoid.customAlphabet("0123456789", 6)()
+    Cache.set(OTP, Currentuser.id, 300)
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -60,8 +59,39 @@ router.post('/resetpassword' ,async (req,res) => {
         html: `<h1>แก้รหัสผ่านค่าอีสัด </h1> ${OTP}`// plain text body
     };
     await transporter.sendMail(mailOptions)
-   
-    res.json(OTP)
+
+    return res.sendStatus(201)
 })
+
+// check OTP
+router.post('/checkOTP', async (req, res) => {
+    const { OTP } = req.body;
+    const userId = Cache.get(OTP)
+    if (!userId) {
+        return res.sendStatus(400)
+    }
+    return res.sendStatus(200)
+})
+
+// change password
+
+router.post('/changePassword', async (req, res) => {
+    const { OTP, password } = req.body;
+    const userId = Cache.get(OTP)
+    if (!userId) {
+        return res.sendStatus(400)
+    }
+    const hashedPassword = await hashPassword(password);
+    await user.updateMany({
+        where: {
+            id: userId
+        },
+        data: {
+            password: hashedPassword
+        }
+    });
+    return res.sendStatus(201)
+})
+
 
 module.exports = router

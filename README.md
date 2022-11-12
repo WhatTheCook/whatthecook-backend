@@ -754,6 +754,95 @@
 ```
 * Error: 400
 
+---
+## Edit pantry
+* URL: /api/pantry/editPantry
+* Method: PUT
+* Headers: Token
+* Body: 
+```
+{
+   {
+    "ingredientId": "55534eaf-24c6-4c1b-b1bb-78ae8e6f7915",
+    "amount" : 10
+}
+}
+```
+*  Params: none
+* Success: 200
+```
+{
+    "count": 1
+}
+```
+* Error: 400
+
+---
+## Send OTP
+
+* URL: /api/user/sendOTP
+* Method: POST
+* Headers: Token
+* Params: none
+* Body: 
+```
+{
+    "email": String
+}
+```
+* Success: 201
+```
+Created
+```
+* Error: 400
+
+---
+## Check OTP
+
+* URL: /api/user/checkOTP
+* Method: POST
+* Headers: Token
+* Params: none
+* Body: 
+```
+{
+    "OTP": String
+}
+```
+* Success: 200
+```
+OK
+```
+* Error: 400
+
+---
+
+## Change password
+* URL: /api/user/changePassword
+* Method: POST
+* Headers: Token
+* Params: none
+* Body: 
+```
+{
+    "OTP":String
+    "password":String
+}
+```
+* Success: 201
+```
+Created
+```
+* Error: 400
+
+---
+
+
+
+
+
+
+
 
 
 
