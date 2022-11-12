@@ -233,8 +233,32 @@ router.get('/missingIngredients', authenticate, async (req, res) => {
     res.json(result)
 });
 
-// click cook
+// click to cook
 
+router.put('/clickForCook', authenticate, async (req, res) => {
+
+    const userId = req.user.user_id;
+    const userIngredient = await pantry.findMany({
+        select: {
+            ingredientId: true,
+            amount: true
+        },
+        where: { userId: userId },
+    });
+
+    const {recipeId} = req.query;
+
+    const updateIngredient = await pantry.update({
+        where: {
+          
+        },
+        data: {
+          content: content,
+          createdAt: new Date()
+        },
+      });
+      res.json(updateIngredient)
+})
 
 
 module.exports = router;
