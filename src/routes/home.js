@@ -233,7 +233,7 @@ router.get('/missingIngredients', authenticate, async (req, res) => {
     res.json(result)
 });
 
-// click to cook
+// calculate remaining ingredient
 
 router.put('/clickForCook', authenticate, async (req, res) => {
     const { recipeId } = req.query;
@@ -259,6 +259,7 @@ router.put('/clickForCook', authenticate, async (req, res) => {
                 amount: { gte: amount }
             }
         });
+        console.log(checkIngredient)
         if (checkIngredient) {
             const newAmount = checkIngredient.amount - amount
             const updateAmount = await pantry.updateMany({
@@ -271,6 +272,9 @@ router.put('/clickForCook', authenticate, async (req, res) => {
                 },
             });
             console.log(updateAmount)
+        }
+        if(checkIngredient == null){
+            return res.sendStatus(404) 
         }
     }
     res.sendStatus(200)
