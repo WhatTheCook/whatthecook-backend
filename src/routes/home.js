@@ -274,7 +274,7 @@ router.put('/clickForCook', authenticate, async (req, res) => {
             console.log(updateAmount)
         }
         if(checkIngredient == null){
-            return res.json("มึงไม่มีวัตถุดิบค่า")
+            return res.sendStatus(404)
         }
     }
     res.sendStatus(200)
