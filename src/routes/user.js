@@ -56,7 +56,7 @@ router.post('/sendOTP', async (req, res) => {
         from: 'whatthecook3567@gmail.com', // sender address
         to: email, // list of receivers
         subject: 'WhatTheCook reset password', // Subject line
-        html: `<h1>แก้รหัสผ่านค่าอีสัด </h1> ${OTP}`// plain text body
+        html: `<h1>Dear WhatTheCook member,</h1> <b> \n Your OTP code:</b> <b>${OTP}</b> <p> Please do not send the code to other</p> <p> OTP will be expired in 6 minutes</p>`// plain text body
     };
     await transporter.sendMail(mailOptions)
 
