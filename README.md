@@ -762,10 +762,8 @@
 * Body: 
 ```
 {
-   {
     "ingredientId": "55534eaf-24c6-4c1b-b1bb-78ae8e6f7915",
     "amount" : 10
-}
 }
 ```
 *  Params: none
