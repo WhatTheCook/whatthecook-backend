@@ -237,6 +237,7 @@ router.get('/missingIngredients', authenticate, async (req, res) => {
 
 router.put('/clickForCook', authenticate, async (req, res) => {
     const { recipeId } = req.query;
+    console.log(req.user)
     const userId = req.user.user_id;
     const recipeIngredient = await recipe_ingredient.findMany({
         select: {
@@ -250,8 +251,9 @@ router.put('/clickForCook', authenticate, async (req, res) => {
             recipeId: recipeId
         },
     });
-
+    console.log(userId)
     for (const { ingredientId, amount } of recipeIngredient) {
+        console.log(ingredientId,userId,await pantry.findMany({where:{ingredientId:ingredientId}}))
         const checkIngredient = await pantry.findFirst({
             where: {
                 ingredientId: ingredientId,
@@ -259,7 +261,6 @@ router.put('/clickForCook', authenticate, async (req, res) => {
                 amount: { gte: amount }
             }
         });
-        console.log(checkIngredient)
         if (checkIngredient) {
             const newAmount = checkIngredient.amount - amount
             const updateAmount = await pantry.updateMany({
@@ -271,13 +272,10 @@ router.put('/clickForCook', authenticate, async (req, res) => {
                     amount:newAmount
                 },
             });
-            console.log(updateAmount)
-        }
-        if(checkIngredient == null){
-            return res.sendStatus(404)
         }
     }
     res.sendStatus(200)
+    
 })
 
 

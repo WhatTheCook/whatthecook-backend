@@ -11,8 +11,8 @@ const authenticate = async (req,res,next) => {
     if (token == null) return res.sendStatus(401)
 
     await jwt.verify(token, process.env.JWT_SECRET, (err,user) => {
-        console.log(user)
-        console.log(err)
+        // console.log(user)
+        // console.log(err)
 
         if (err) return res.sendStatus(403)
 
