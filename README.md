@@ -836,6 +836,21 @@ Created
 ---
 
 
+## Delete all ingredient
+
+* URL: /api/pantry/deleteAllIngredient
+* Method: DELETE
+* Headers: Token
+* Params: none
+* Body: none
+* Success: 200
+```
+OK
+```
+* Error: 400
+
+
+
 
 
 
