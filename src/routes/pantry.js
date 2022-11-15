@@ -19,7 +19,7 @@ router.post('/findIngredients', authenticate, async (req, res) => {
             },
         });
         if (findIngredients) {
-            foundIngredients.push({ id: findIngredients.id, name, amount, unit: findIngredients.unit })
+            foundIngredients.push({ id: findIngredients.id, name, amount, unit: findIngredients.unit})
         }
     }
     res.json(foundIngredients)
@@ -34,8 +34,8 @@ router.post('/searchIngredient', async (req, res) => {
             },
         },
     });
-    if(findIngredients == null) {
-        res.status(400).json({"message": "Ingredient not found"})
+    if (findIngredients == null) {
+        res.status(400).json({ "message": "Ingredient not found" })
     }
     res.json(findIngredients)
 })
@@ -100,7 +100,7 @@ router.get("/userIngredients", authenticate, async (req, res) => {
                     name: true,
                     unit: true,
                 },
-                
+
             }
         }
     });
@@ -113,7 +113,7 @@ router.delete('/deleteIngredient', authenticate, async (req, res) => {
     const userId = req.user.user_id;
     const deleteIngredient = await pantry.deleteMany({
         where: {
-            ingredientId: ingredientId,
+            ingredientId:ingredientId,
             userId: userId
         },
     });
@@ -123,19 +123,19 @@ router.delete('/deleteIngredient', authenticate, async (req, res) => {
 // edit pantry
 
 router.put('/editPantry', authenticate, async (req, res) => {
-    const { ingredientId,amount } = req.body;
+    const { ingredientId, amount } = req.body;
     const userId = req.user.user_id;
     const updateAmount = await pantry.updateMany({
-      where: {
-        ingredientId:ingredientId,
-        userId
-      },
-      data: {
-        amount:amount
-      },
+        where: {
+            ingredientId:ingredientId,
+            userId
+        },
+        data: {
+            amount:amount
+        },
     });
     res.json(updateAmount)
-  })
+})
 
 // delete all ingredients 
 router.delete('/deleteAllIngredient', authenticate, async (req, res) => {
@@ -145,8 +145,8 @@ router.delete('/deleteAllIngredient', authenticate, async (req, res) => {
             userId: userId
         },
     });
-    
-    res.json(userIngredients)
+
+    res.json(200)
 });
 
 module.exports = router;
