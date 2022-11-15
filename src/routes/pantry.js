@@ -137,5 +137,16 @@ router.put('/editPantry', authenticate, async (req, res) => {
     res.json(updateAmount)
   })
 
+// delete all ingredients 
+router.delete('/deleteAllIngredient', authenticate, async (req, res) => {
+    const userId = req.user.user_id;
+    const deleteAllIngredient = await pantry.delete({
+        where: {
+            userId: userId
+        },
+    });
+    
+    res.json(userIngredients)
+});
 
 module.exports = router;
