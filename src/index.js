@@ -13,6 +13,6 @@ app.use('/api/pantry', require("./routes/pantry"))
 app.use('/api/home', require("./routes/home"))
 
 
-app.listen(5000, () => {
+app.listen(5050, () => {
   console.log("Listening on port 5000!!");
 });

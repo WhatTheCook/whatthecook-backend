@@ -164,6 +164,7 @@ router.put('/editComment', authenticate, async (req, res) => {
 router.delete('/deleteComment', authenticate, async (req, res) => {
   const { commentId } = req.body;
   const userId = req.user.user_id;
+  console.log(userId)
   const commentExists = await comment.findFirst({
     where: {
       id: commentId,
@@ -175,12 +176,18 @@ router.delete('/deleteComment', authenticate, async (req, res) => {
       msg: "comment not found"
     })
   }
+  const deleteCommentFav = await comment_fav.deleteMany({
+    where: {
+      commentId: commentId,
+    },
+  });
   const deleteComment = await comment.delete({
     where: {
       id: commentId
     },
   });
-  res.json(deleteComment)
+  
+  res.json(200)
 })
 
 // search category
